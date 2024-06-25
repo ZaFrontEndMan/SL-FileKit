@@ -1,0 +1,57 @@
+// assets
+import {
+  IconTypography,
+  IconPalette,
+  IconShadow,
+  IconWindmill,
+  IconTrash,
+  IconCalendarStar,
+  IconFileDescription
+} from '@tabler/icons-react';
+
+// constant
+const icons = {
+  IconTypography,
+  IconPalette,
+  IconShadow,
+  IconWindmill,
+  IconCalendarStar,
+  IconFileDescription,
+  IconTrash
+};
+
+// ==============================|| UTILITIES MENU ITEMS ||============================== //
+
+const utilities = {
+  id: 'utilities',
+  title: 'Manage',
+  type: 'group',
+  children: [
+    {
+      id: 'util-files',
+      title: 'Files',
+      type: 'item',
+      url: '/files',
+      icon: icons.IconFileDescription,
+      breadcrumbs: false
+    },
+    {
+      id: 'util-favourites',
+      title: 'Favourites',
+      type: 'item',
+      url: '/favourites',
+      icon: icons.IconCalendarStar,
+      breadcrumbs: false
+    },
+    {
+      id: 'util-Trash',
+      title: 'Trash',
+      type: 'item',
+      url: '/Trash',
+      icon: icons.IconTrash,
+      breadcrumbs: false
+    }
+  ]
+};
+
+export default utilities;
