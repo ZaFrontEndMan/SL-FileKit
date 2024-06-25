@@ -29,7 +29,8 @@ const Register = () => {
                 <Grid container spacing={2} alignItems="center" justifyContent="center">
                   <Grid item sx={{ mb: 3 }}>
                     <Link to="#">
-                      <Logo />
+                      {/* <Logo /> */}
+                      <Typography variant="h1">FileKit</Typography>
                     </Link>
                   </Grid>
                   <Grid item xs={12}>
