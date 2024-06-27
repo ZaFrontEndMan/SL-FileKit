@@ -127,7 +127,7 @@ const AuthLogin = () => {
         </Stack>
         {/* Submit Button */}
         <Box sx={{ mt: 2 }}>
-          <Button disableElevation disabled={isLoading} fullWidth size="large" type="submit" variant="contained" color="secondary">
+          <Button disableElevation disabled={isLoading} fullWidth size="large" type="submit" variant="contained" color="primary">
             {isLoading ? 'Signing In...' : 'Sign In'}
           </Button>
         </Box>
