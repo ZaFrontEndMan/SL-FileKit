@@ -21,9 +21,9 @@ import {
 
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-
-import InfinityFetch from 'utils/InfinityFetch';
+import Cookies from 'js-cookie';
 import { useNavigate } from 'react-router';
+import axiosInstance from './../../../../axiosInstance';
 
 const AuthLogin = () => {
   const navigate = useNavigate();
@@ -38,57 +38,25 @@ const AuthLogin = () => {
     password: Yup.string().max(255).required('Password is required')
   });
 
-  // const formik = useFormik({
-  //   initialValues: {
-  //     email: '',
-  //     password: ''
-  //   },
-  //   validationSchema,
-  //   onSubmit: async (values) => {
-  //     setIsLoading(true);
-  //     try {
-  //       const body = { ...values, financialYear: 2024, branchIds: [12] };
-
-  //       const response = await InfinityFetch('https://api.infinityjerp.com/api/auth/login', {
-  //         method: 'POST',
-  //         headers: {
-  //           'Content-Type': 'application/json'
-  //         },
-  //         body: JSON.stringify(body)
-  //       });
-
-  //       if (!response.ok) {
-  //         throw new Error('Network response was not ok ' + response.statusText);
-  //       }
-
-  //       const data = await response.json();
-  //       if (data?.token) {
-  //         localStorage.setItem('infinity_identity', data?.token);
-  //         navigate('/');
-  //         setIsLoading(false);
-  //         toast.success('Login Successful');
-  //       } else {
-  //         toast.warning(data?.error?.message);
-  //       }
-  //     } catch (error) {
-  //       toast.error(error.message);
-  //       setIsLoading(false);
-  //       console.error('Error:', error.message);
-  //     }
-  //   }
-  // });
   const formik = useFormik({
     initialValues: {
-      email: 'soft-lap@test.com',
-      password: '123456'
+      email: '',
+      password: ''
     },
     validationSchema,
     onSubmit: async (values) => {
       setIsLoading(true);
-
-      navigate('/');
-      setIsLoading(false);
-      toast.success('Login Successful');
+      try {
+        const { data } = await axiosInstance.post('/manager/login', { email: values.email, password: values.password });
+        Cookies.set('token', data?.result?.data?.token, { expires: 7 });
+        toast.success('Login Successful');
+        setIsLoading(false);
+        navigate('/');
+      } catch (error) {
+        toast.error(error?.response?.data?.message);
+      } finally {
+        setIsLoading(false);
+      }
     }
   });
 

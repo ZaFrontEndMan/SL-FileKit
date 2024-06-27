@@ -4,7 +4,6 @@ import { Typography } from '@mui/material';
 // project imports
 import NavGroup from './NavGroup';
 import menuItem from 'menu-items';
-import SelectProject from 'Components/selectProject/SelectProject';
 
 // ==============================|| SIDEBAR MENU LIST ||============================== //
 
@@ -22,12 +21,7 @@ const MenuList = () => {
     }
   });
 
-  return (
-    <>
-      <SelectProject />
-      {navItems}
-    </>
-  );
+  return <>{navItems}</>;
 };
 
 export default MenuList;

@@ -10,6 +10,7 @@ import App from 'App';
 import { store } from 'store';
 
 // style + assets
+import 'bootstrap/dist/css/bootstrap.min.css';
 import 'assets/scss/style.scss';
 import config from './config';
 
