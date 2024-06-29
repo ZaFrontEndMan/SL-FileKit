@@ -292,11 +292,10 @@ const Documents = () => {
       <Modal open={modalOpen} onClose={handleModalClose}>
         <AddRenameFolder
           closeModal={handleModalClose}
-          createFolder={handleCreateFolder}
-          renameFolder={handleRenameFolder}
+          handleCreateFolder={selectedItem ? handleRenameFolder : handleCreateFolder}
           title={selectedItem ? 'Rename Folder' : 'Add Folder'}
           folderName={newFolderName}
-          setFolderName={setNewFolderName}
+          setNewFolderName={setNewFolderName}
           folderLoading={folderLoading}
         />
       </Modal>
