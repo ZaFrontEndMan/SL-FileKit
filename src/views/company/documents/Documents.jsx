@@ -9,8 +9,11 @@ import {
   Menu,
   MenuItem,
   Modal,
-  TextField,
-  Box as MuiBox
+  Box as MuiBox,
+  ListItemIcon,
+  ListItemText,
+  ToggleButton,
+  ToggleButtonGroup
 } from '@mui/material';
 import MainCard from 'ui-component/cards/MainCard';
 import { useTheme } from '@mui/material/styles';
@@ -19,17 +22,32 @@ import { IconSearch } from '@tabler/icons-react';
 import MainFileCard from 'Components/mainFileCard/MainFileCard';
 import axiosInstance from './../../../axiosInstance';
 import { toast } from 'react-toastify';
+import AddRenameFolder from 'Components/company/addRenameFolder/AddRenameFolder';
+import DeleteModal from 'Components/company/deleteConfirmationModal/DeleteModal';
+import {
+  CreateNewFolderOutlined as CreateNewFolderOutlinedIcon,
+  UploadFileOutlined as UploadFileOutlinedIcon,
+  StarBorderOutlined as StarBorderOutlinedIcon,
+  DeleteOutlineOutlined as DeleteOutlineOutlinedIcon,
+  GridViewOutlined as GridViewOutlinedIcon,
+  ListOutlined as ListOutlinedIcon
+} from '@mui/icons-material';
 
 const Documents = () => {
   const theme = useTheme();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [folderLoading, setFolderLoading] = useState(false);
   const [refetch, setRefetch] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [anchorEl, setAnchorEl] = useState(null);
+  const [anchorElSelection, setAnchorElSelection] = useState(null);
+  const [selectedItem, setSelectedItem] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [trashModalOpen, setTrashModalOpen] = useState(false);
   const [newFolderName, setNewFolderName] = useState('');
+  const [folderLoading, setFolderLoading] = useState(false);
+  const [selectedIDS, setSelectedIDS] = useState([]);
+  const [isGridDisplay, setIsGridDisplay] = useState(true); // State for display mode
 
   const getFiles = async () => {
     try {
@@ -37,7 +55,7 @@ const Documents = () => {
       const response = await axiosInstance.get('/manager/folders');
       setData(response.data?.result?.data);
     } catch (error) {
-      toast.error(error?.response?.data?.message);
+      toast.error(error?.response?.data?.message || 'Failed to fetch files');
     } finally {
       setLoading(false);
     }
@@ -56,13 +74,30 @@ const Documents = () => {
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
   };
-
+  const handleSelectionMenuOpen = (event) => {
+    setAnchorElSelection(event.currentTarget);
+  };
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
-
+  const handleSelectionMenuClose = () => {
+    setAnchorElSelection(null);
+  };
   const handleAddFolder = () => {
     setModalOpen(true);
+    handleMenuClose();
+  };
+
+  const handleRenameFolderModal = (file) => {
+    setModalOpen(true);
+    setSelectedItem(file?.id);
+    setNewFolderName(file?.title);
+    handleMenuClose();
+  };
+
+  const handleTrashedFolderModal = (file) => {
+    setTrashModalOpen(true);
+    setSelectedItem(file?.id);
     handleMenuClose();
   };
 
@@ -70,24 +105,68 @@ const Documents = () => {
     // Handle file upload logic
     handleMenuClose();
   };
-
+  const handleCheckboxChange = (fileID) => {
+    setSelectedIDS((prevSelectedIDS) =>
+      prevSelectedIDS.includes(fileID) ? prevSelectedIDS.filter((id) => id !== fileID) : [...prevSelectedIDS, fileID]
+    );
+  };
   const handleModalClose = () => {
     setModalOpen(false);
+    setTrashModalOpen(false);
     setNewFolderName('');
+    setSelectedItem(null);
   };
 
   const handleCreateFolder = async () => {
     try {
       setFolderLoading(true);
-      const response = await axiosInstance.post('/manager/folder/create', {
+      await axiosInstance.post('/manager/folder/create', {
         title: newFolderName
       });
       setRefetch(!refetch);
+      toast.success('Folder created successfully');
       handleModalClose();
     } catch (error) {
-      toast.error(error?.response?.data?.message);
+      toast.error(error?.response?.data?.message || 'Failed to create folder');
     } finally {
       setFolderLoading(false);
+    }
+  };
+
+  const handleRenameFolder = async () => {
+    try {
+      setFolderLoading(true);
+      await axiosInstance.post('/manager/folder/rename', {
+        folder_id: selectedItem,
+        title: newFolderName
+      });
+      setRefetch(!refetch);
+      toast.success('Folder renamed successfully');
+      handleModalClose();
+    } catch (error) {
+      toast.error(error?.response?.data?.message || 'Failed to rename folder');
+    } finally {
+      setFolderLoading(false);
+    }
+  };
+
+  const handleTrashedFolder = async () => {
+    try {
+      setFolderLoading(true);
+      await axiosInstance.delete(`/manager/folder/delete/${selectedItem}`);
+      setRefetch(!refetch);
+      toast.success('Folder trashed successfully');
+      handleModalClose();
+    } catch (error) {
+      toast.error(error?.response?.data?.message || 'Failed to trash folder');
+    } finally {
+      setFolderLoading(false);
+    }
+  };
+
+  const toggleDisplayMode = (event, newDisplayMode) => {
+    if (newDisplayMode !== null) {
+      setIsGridDisplay(newDisplayMode === 'grid');
     }
   };
 
@@ -112,66 +191,124 @@ const Documents = () => {
             'aria-label': 'weight'
           }}
         />
-        <Button color="primary" onClick={handleMenuOpen}>
+        <Button variant="contained" color="primary" onClick={handleMenuOpen}>
           + New
         </Button>
+        {selectedIDS?.length > 0 && (
+          <Button variant="outlined" color="primary" onClick={handleSelectionMenuOpen}>
+            Manage Selection
+          </Button>
+        )}
         <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
-          <MenuItem onClick={handleAddFolder}>Add Folder</MenuItem>
-          <MenuItem onClick={handleUploadFile}>Upload File</MenuItem>
+          <MenuItem onClick={handleAddFolder}>
+            <CreateNewFolderOutlinedIcon sx={{ mr: 1 }} />
+            Add Folder
+          </MenuItem>
+          <MenuItem onClick={handleUploadFile}>
+            <UploadFileOutlinedIcon sx={{ mr: 1 }} />
+            Upload File
+          </MenuItem>
         </Menu>
+        <Menu anchorEl={anchorElSelection} open={Boolean(anchorElSelection)} onClose={handleSelectionMenuClose}>
+          <MenuItem>
+            <ListItemIcon>
+              <StarBorderOutlinedIcon />
+            </ListItemIcon>
+            <ListItemText primary="Favourite Selection" />
+          </MenuItem>
+          <MenuItem>
+            <ListItemIcon>
+              <DeleteOutlineOutlinedIcon />
+            </ListItemIcon>
+            <ListItemText primary="Trash Selection" />
+          </MenuItem>
+        </Menu>
+        <Box sx={{ marginLeft: 'auto' }}>
+          {' '}
+          {/* This pushes ToggleButtonGroup to the end */}
+          <ToggleButtonGroup value={isGridDisplay ? 'grid' : 'list'} exclusive onChange={toggleDisplayMode} aria-label="display mode">
+            <ToggleButton value="grid" aria-label="grid view">
+              <GridViewOutlinedIcon />
+            </ToggleButton>
+            <ToggleButton value="list" aria-label="list view">
+              <ListOutlinedIcon />
+            </ToggleButton>
+          </ToggleButtonGroup>
+        </Box>
       </Box>
+
       {loading ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
           <CircularProgress />
         </Box>
       ) : (
-        <Grid container spacing={2} justifyContent="start" alignItems="center">
-          {filteredData.map((file) => (
-            <Grid item key={file.id} xs={12} sm={6} md={3} lg={2}>
-              <MainFileCard file={file} />
+        <>
+          {isGridDisplay ? (
+            <Grid container spacing={2} justifyContent="start" alignItems="center">
+              {filteredData.map((file) => (
+                <Grid item key={file.id} xs={12} sm={6} md={6} lg={3} xl={2}>
+                  <MainFileCard
+                    selectedIDS={selectedIDS}
+                    setSelectedIDS={setSelectedIDS}
+                    handleCheckboxChange={handleCheckboxChange}
+                    file={file}
+                    onClickFavourite={() => {
+                      console.log(file?.id);
+                    }}
+                    onClickRename={() => {
+                      handleRenameFolderModal(file);
+                    }}
+                    onClickTrash={() => {
+                      handleTrashedFolderModal(file);
+                    }}
+                  />
+                </Grid>
+              ))}
             </Grid>
-          ))}
-        </Grid>
+          ) : (
+            <MuiBox>
+              {filteredData.map((file) => (
+                <MainFileCard
+                  key={file.id}
+                  selectedIDS={selectedIDS}
+                  setSelectedIDS={setSelectedIDS}
+                  handleCheckboxChange={handleCheckboxChange}
+                  file={file}
+                  onClickFavourite={() => {
+                    console.log(file?.id);
+                  }}
+                  onClickRename={() => {
+                    handleRenameFolderModal(file);
+                  }}
+                  onClickTrash={() => {
+                    handleTrashedFolderModal(file);
+                  }}
+                />
+              ))}
+            </MuiBox>
+          )}
+        </>
       )}
       <Modal open={modalOpen} onClose={handleModalClose}>
-        <MuiBox
-          sx={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: 400,
-            bgcolor: 'background.paper',
-            borderRadius: '12px',
-            boxShadow: 24,
-            p: 4
-          }}
-        >
-          <Typography variant="h6" component="h2">
-            Add New Folder
-          </Typography>
-          <TextField
-            fullWidth
-            label="Folder Name"
-            value={newFolderName}
-            onChange={(e) => setNewFolderName(e.target.value)}
-            sx={{ mt: 2 }}
-          />
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
-            <Button onClick={handleModalClose} sx={{ mr: 1 }}>
-              Cancel
-            </Button>
-            <Button disabled={folderLoading} variant="contained" color="primary" onClick={handleCreateFolder}>
-              {!folderLoading ? (
-                'Create'
-              ) : (
-                <>
-                  <CircularProgress />
-                </>
-              )}
-            </Button>
-          </Box>
-        </MuiBox>
+        <AddRenameFolder
+          closeModal={handleModalClose}
+          createFolder={handleCreateFolder}
+          renameFolder={handleRenameFolder}
+          title={selectedItem ? 'Rename Folder' : 'Add Folder'}
+          folderName={newFolderName}
+          setFolderName={setNewFolderName}
+          folderLoading={folderLoading}
+        />
+      </Modal>
+      <Modal open={trashModalOpen} onClose={handleModalClose}>
+        <DeleteModal
+          title="Delete Folder"
+          handleModalClose={handleModalClose}
+          refetch={refetch}
+          setRefetch={setRefetch}
+          folderLoading={folderLoading}
+          handleDelete={handleTrashedFolder}
+        />
       </Modal>
     </MainCard>
   );

@@ -22,21 +22,45 @@ const fileTypeToImg = {
   txt: txtImg
 };
 
-const MainFileCard = ({ file }) => {
+const MainFileCard = ({
+  file,
+  favourite,
+  onClickFavourite,
+  isDisableFaavourite,
+  rename,
+  onClickRename,
+  isDisableRename,
+  trash,
+  onClickTrash,
+  isDisableTrash,
+  selectedIDS,
+  handleCheckboxChange
+}) => {
   const fileImgSrc = fileTypeToImg[file?.type] || fileImg;
+  const isSelected = selectedIDS.includes(file.id);
 
   return (
     <Card sx={{ cursor: 'pointer', border: '1px solid lightGray' }}>
       <CardContent>
         <Grid container alignItems="start" justifyContent="space-between">
           <Grid item>
-            <Checkbox />
+            <Checkbox checked={isSelected} onChange={() => handleCheckboxChange(file.id)} />
           </Grid>
           <Grid item>
             <img width={80} src={fileImgSrc} alt={file?.type} />
           </Grid>
           <Grid item>
-            <FolderActions />
+            <FolderActions
+              favourite={favourite}
+              onClickFavourite={onClickFavourite}
+              isDisableFaavourite={isDisableFaavourite}
+              rename={rename}
+              onClickRename={onClickRename}
+              isDisableRename={isDisableRename}
+              trash={trash}
+              onClickTrash={onClickTrash}
+              isDisableTrash={isDisableTrash}
+            />
           </Grid>
         </Grid>
         <Box sx={{ textAlign: 'center', mt: 2 }}>

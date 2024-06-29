@@ -9,120 +9,64 @@ import EditNoteIcon from '@mui/icons-material/EditNote';
 import StarOutlineIcon from '@mui/icons-material/StarOutline';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import ListIcon from '@mui/icons-material/List';
-const FolderActions = () =>
-  //     {
-  //   translate: t,
+const FolderActions = ({
+  //add to favourite
+  favourite = true,
+  onClickFavourite,
+  isDisableFaavourite = false,
 
-  //   // view
-  //   onClickView,
-  //   viewContent = t('view_key'),
+  //add to rename
+  rename = true,
+  onClickRename,
+  isDisableRename = false,
 
-  //   // edit
-  //   onClickEdit,
-  //   isDisabledEdit = false,
+  // move to trash
+  trash = true,
+  onClickTrash,
+  isDisableTrash = false
+}) => {
+  const [anchorEl, setAnchorEl] = React.useState(null);
 
-  //   // delete
-  //   onClickDelete,
-  //   isDisabledDelete = false,
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
 
-  //   // print preview
-  //   onClickPrintPreview,
-  //   printPreviewContent = t('print_preview_key'),
-  //   isDisabledPrintPreview,
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
-  //   // print certificate
-  //   onClickPrintCertificate,
-  //   printCertificateContent = t('print_certificate_key'),
-  //   isDisabledPrintCertificate,
-
-  //   // print Customer Copy
-  //   onClickPrintCustomerCopy,
-  //   printCustomerCopyContent,
-
-  //   // print jv
-  //   onClickPrintJV,
-  //   isDisabledPrintJV,
-
-  //   // print record
-  //   onClickPrintRecord,
-  //   isDisabledPrintRecord,
-
-  //   // export record
-  //   onClickExportRecord,
-  //   isDisabledExportRecord,
-
-  //   // activate
-  //   onClickActivate,
-  //   isDisabledActivate = false,
-  //   activeContent,
-
-  //   // Approve
-  //   onClickApprove,
-  //   isDisabledApprove = false,
-
-  //   // Reject
-  //   onClickReject,
-  //   isDisabledReject = false,
-
-  //   // send via email
-  //   onClickSendEmail,
-
-  //   // send via whatsapp
-  //   onClickSendWhatsapp,
-
-  //   // invoice update receipts
-  //   onClickUpdateReceipts,
-  //   updateContent = t('invoice_update_receipts_key'),
-
-  //   // download attachment
-  //   onClickDownloadAttachment,
-
-  //   // new invoice print
-  //   onClickNewInvoicePrint,
-  //   printNewInvoiceContent,
-
-  //   onClickCopyContent,
-  //   copyContent = t('copy_content_key'),
-
-  //   children
-  // }
-  {
-    const [anchorEl, setAnchorEl] = React.useState(null);
-
-    const handleClick = (event) => {
-      setAnchorEl(event.currentTarget);
-    };
-
-    const handleClose = () => {
-      setAnchorEl(null);
-    };
-
-    return (
-      <div>
-        <IconButton onClick={handleClick}>
-          <ListIcon />
-        </IconButton>
-        <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
-          <MenuItem onClick={handleClose}>
+  return (
+    <div>
+      <IconButton onClick={handleClick}>
+        <ListIcon />
+      </IconButton>
+      <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
+        {favourite && (
+          <MenuItem disabled={isDisableFaavourite} onClick={onClickFavourite}>
             <ListItemIcon>
               <StarOutlineIcon />
             </ListItemIcon>
             <ListItemText primary={'Add To Favourite'} />
           </MenuItem>
-          <MenuItem onClick={handleClose}>
+        )}
+        {rename && (
+          <MenuItem disabled={isDisableRename} onClick={onClickRename}>
             <ListItemIcon>
               <EditNoteIcon />
             </ListItemIcon>
             <ListItemText primary={'Rename'} />
           </MenuItem>
-          <MenuItem onClick={handleClose}>
+        )}
+        {trash && (
+          <MenuItem onClick={onClickTrash}>
             <ListItemIcon>
               <DeleteOutlineIcon />
             </ListItemIcon>
             <ListItemText primary={'Move To Trash'} />
           </MenuItem>
+        )}
 
-          {/* {onClickCopyContent && (
+        {/* {onClickCopyContent && (
           <MenuItem onClick={onClickCopyContent}>
             <ListItemIcon>
               <CopyIcon />
@@ -130,9 +74,9 @@ const FolderActions = () =>
             <ListItemText primary={copyContent} />
           </MenuItem>
         )} */}
-        </Menu>
-      </div>
-    );
-  };
+      </Menu>
+    </div>
+  );
+};
 
 export default FolderActions;
