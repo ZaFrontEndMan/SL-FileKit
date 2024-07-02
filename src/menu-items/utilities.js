@@ -36,14 +36,6 @@ const utilities = {
       breadcrumbs: false
     },
     {
-      id: 'util-favourites',
-      title: 'Favourites',
-      type: 'item',
-      url: '/favourites',
-      icon: icons.IconCalendarStar,
-      breadcrumbs: false
-    },
-    {
       id: 'util-Trash',
       title: 'Trash',
       type: 'item',

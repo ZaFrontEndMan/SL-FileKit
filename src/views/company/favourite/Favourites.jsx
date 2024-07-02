@@ -25,16 +25,13 @@ import { toast } from 'react-toastify';
 import AddRenameFolder from 'Components/company/addRenameFolder/AddRenameFolder';
 import DeleteModal from 'Components/company/deleteConfirmationModal/DeleteModal';
 import {
-  CreateNewFolderOutlined as CreateNewFolderOutlinedIcon,
-  UploadFileOutlined as UploadFileOutlinedIcon,
   StarBorderOutlined as StarBorderOutlinedIcon,
   DeleteOutlineOutlined as DeleteOutlineOutlinedIcon,
-  FolderZipOutlined as FolderZipOutlinedIcon,
   GridViewOutlined as GridViewOutlinedIcon,
   ListOutlined as ListOutlinedIcon
 } from '@mui/icons-material';
 
-const Documents = () => {
+const Favourites = () => {
   const theme = useTheme();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -44,7 +41,6 @@ const Documents = () => {
   const [anchorElSelection, setAnchorElSelection] = useState(null);
   const [selectedItem, setSelectedItem] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
-  const [trashModalOpen, setTrashModalOpen] = useState(false);
   const [newFolderName, setNewFolderName] = useState('');
   const [folderLoading, setFolderLoading] = useState(false);
   const [selectedIDS, setSelectedIDS] = useState([]);
@@ -53,7 +49,7 @@ const Documents = () => {
   const getFiles = async () => {
     try {
       setLoading(true);
-      const response = await axiosInstance.get('/manager/folders');
+      const response = await axiosInstance.get('/manager/file/favorite');
       setData(response.data?.result?.data);
     } catch (error) {
       toast.error(error?.response?.data?.message || 'Failed to fetch files');
@@ -72,9 +68,6 @@ const Documents = () => {
 
   const filteredData = data.filter((file) => file?.title?.toLowerCase().includes(searchQuery.toLowerCase()));
 
-  const handleMenuOpen = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
   const handleSelectionMenuOpen = (event) => {
     setAnchorElSelection(event.currentTarget);
   };
@@ -83,23 +76,6 @@ const Documents = () => {
   };
   const handleSelectionMenuClose = () => {
     setAnchorElSelection(null);
-  };
-  const handleAddFolder = () => {
-    setModalOpen(true);
-    handleMenuClose();
-  };
-
-  const handleRenameFolderModal = (file) => {
-    setModalOpen(true);
-    setSelectedItem(file?.id);
-    setNewFolderName(file?.title);
-    handleMenuClose();
-  };
-
-  const handleTrashedFolderModal = (file) => {
-    setTrashModalOpen(true);
-    setSelectedItem(file?.id);
-    handleMenuClose();
   };
 
   const handleUploadFile = () => {
@@ -111,29 +87,23 @@ const Documents = () => {
       prevSelectedIDS.includes(fileID) ? prevSelectedIDS.filter((id) => id !== fileID) : [...prevSelectedIDS, fileID]
     );
   };
+
+  const toggleDisplayMode = (event, newDisplayMode) => {
+    if (newDisplayMode !== null) {
+      setIsGridDisplay(newDisplayMode === 'grid');
+    }
+  };
+  const handleRenameFolderModal = (file) => {
+    setModalOpen(true);
+    setSelectedItem(file?.id);
+    setNewFolderName(file?.title);
+    handleMenuClose();
+  };
   const handleModalClose = () => {
     setModalOpen(false);
-    setTrashModalOpen(false);
     setNewFolderName('');
     setSelectedItem(null);
   };
-
-  const handleCreateFolder = async () => {
-    try {
-      setFolderLoading(true);
-      await axiosInstance.post('/manager/folder/create', {
-        title: newFolderName
-      });
-      setRefetch(!refetch);
-      toast.success('Folder created successfully');
-      handleModalClose();
-    } catch (error) {
-      toast.error(error?.response?.data?.message || 'Failed to create folder');
-    } finally {
-      setFolderLoading(false);
-    }
-  };
-
   const handleRenameFolder = async () => {
     try {
       setFolderLoading(true);
@@ -150,42 +120,10 @@ const Documents = () => {
       setFolderLoading(false);
     }
   };
-
-  const handleTrashedFolder = async () => {
-    try {
-      setFolderLoading(true);
-      await axiosInstance.delete(`/manager/folder/delete/${selectedItem}`);
-      setRefetch(!refetch);
-      toast.success('Folder trashed successfully');
-      handleModalClose();
-    } catch (error) {
-      toast.error(error?.response?.data?.message || 'Failed to trash folder');
-    } finally {
-      setFolderLoading(false);
-    }
-  };
-  const handleZippingSelection = async () => {
-    try {
-      const { data } = await axiosInstance.post(`/manager/folders/zip`, {
-        files: selectedIDS
-      });
-      toast.success(data?.message);
-      setSelectedIDS([]);
-      setRefetch(!refetch);
-    } catch (error) {
-      toast.error(error?.response?.data?.message || 'Failed to trash folder');
-    }
-  };
-  const toggleDisplayMode = (event, newDisplayMode) => {
-    if (newDisplayMode !== null) {
-      setIsGridDisplay(newDisplayMode === 'grid');
-    }
-  };
-
   return (
-    <MainCard title="Documents">
-      <Typography variant="h2">Manage Documents</Typography>
-      <Typography variant="h6">View and manage your Documents and folders</Typography>
+    <MainCard title="Favourites">
+      <Typography variant="h2">Manage Favourites</Typography>
+      <Typography variant="h6">View and manage your Favourites and folders</Typography>
       <Box sx={{ display: 'flex', justifyContent: 'start', alignItems: 'center', my: 2, gap: 2 }}>
         <OutlinedInput
           sx={{ width: '25%', pr: 1, pl: 2 }}
@@ -203,42 +141,25 @@ const Documents = () => {
             'aria-label': 'weight'
           }}
         />
-        <Button variant="contained" color="primary" onClick={handleMenuOpen}>
-          + New
-        </Button>
+
         {selectedIDS?.length > 0 && (
           <Button variant="outlined" color="primary" onClick={handleSelectionMenuOpen}>
             Manage Selection
           </Button>
         )}
-        <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
-          <MenuItem onClick={handleAddFolder}>
-            <CreateNewFolderOutlinedIcon sx={{ mr: 1 }} />
-            Add Folder
-          </MenuItem>
-          <MenuItem onClick={handleUploadFile}>
-            <UploadFileOutlinedIcon sx={{ mr: 1 }} />
-            Upload File
-          </MenuItem>
-        </Menu>
+
         <Menu anchorEl={anchorElSelection} open={Boolean(anchorElSelection)} onClose={handleSelectionMenuClose}>
           <MenuItem>
             <ListItemIcon>
               <StarBorderOutlinedIcon />
             </ListItemIcon>
-            <ListItemText primary="Favourite Selection" />
+            <ListItemText primary="Rmove From Favourites" />
           </MenuItem>
           <MenuItem>
             <ListItemIcon>
               <DeleteOutlineOutlinedIcon />
             </ListItemIcon>
             <ListItemText primary="Trash Selection" />
-          </MenuItem>
-          <MenuItem>
-            <ListItemIcon>
-              <FolderZipOutlinedIcon />
-            </ListItemIcon>
-            <ListItemText onClick={handleZippingSelection} primary="Zipping Selection" />
           </MenuItem>
         </Menu>
         <Box sx={{ marginLeft: 'auto' }}>
@@ -266,18 +187,16 @@ const Documents = () => {
               {filteredData.map((file) => (
                 <Grid item key={file.id} xs={12} sm={6} md={6} lg={3} xl={2}>
                   <MainFileCard
+                    favourite={false}
                     selectedIDS={selectedIDS}
                     setSelectedIDS={setSelectedIDS}
                     handleCheckboxChange={handleCheckboxChange}
                     file={file}
-                    onClickFavourite={() => {
+                    onClickRemoveFavourite={() => {
                       console.log(file?.id);
                     }}
                     onClickRename={() => {
                       handleRenameFolderModal(file);
-                    }}
-                    onClickTrash={() => {
-                      handleTrashedFolderModal(file);
                     }}
                   />
                 </Grid>
@@ -295,6 +214,7 @@ const Documents = () => {
                   onClickFavourite={() => {
                     console.log(file?.id);
                   }}
+                  favourite={false}
                   onClickRename={() => {
                     handleRenameFolderModal(file);
                   }}
@@ -310,26 +230,15 @@ const Documents = () => {
       <Modal open={modalOpen} onClose={handleModalClose}>
         <AddRenameFolder
           closeModal={handleModalClose}
-          handleCreateFolder={selectedItem ? handleRenameFolder : handleCreateFolder}
+          handleCreateFolder={handleRenameFolder}
           title={selectedItem ? 'Rename Folder' : 'Add Folder'}
           folderName={newFolderName}
           setNewFolderName={setNewFolderName}
           folderLoading={folderLoading}
         />
       </Modal>
-      <Modal open={trashModalOpen} onClose={handleModalClose}>
-        <DeleteModal
-          content={'Are you sure want to trash this item ?'}
-          title="Delete Folder"
-          handleModalClose={handleModalClose}
-          refetch={refetch}
-          setRefetch={setRefetch}
-          folderLoading={folderLoading}
-          handleDelete={handleTrashedFolder}
-        />
-      </Modal>
     </MainCard>
   );
 };
 
-export default Documents;
+export default Favourites;

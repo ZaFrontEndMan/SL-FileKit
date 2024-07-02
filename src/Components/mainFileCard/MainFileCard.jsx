@@ -26,7 +26,10 @@ const MainFileCard = ({
   file,
   favourite,
   onClickFavourite,
-  isDisableFaavourite,
+  isDisableFavourite,
+  removeFavourite,
+  onClickremoveFavourite,
+  isDisableRemoveFavourite,
   rename,
   onClickRename,
   isDisableRename,
@@ -38,7 +41,6 @@ const MainFileCard = ({
 }) => {
   const fileImgSrc = fileTypeToImg[file?.type] || fileImg;
   const isSelected = selectedIDS.includes(file.id);
-
   return (
     <Card sx={{ cursor: 'pointer', border: '1px solid lightGray' }}>
       <CardContent>
@@ -53,13 +55,16 @@ const MainFileCard = ({
             <FolderActions
               favourite={favourite}
               onClickFavourite={onClickFavourite}
-              isDisableFaavourite={isDisableFaavourite}
+              isDisableFavourite={isDisableFavourite}
               rename={rename}
               onClickRename={onClickRename}
               isDisableRename={isDisableRename}
               trash={trash}
               onClickTrash={onClickTrash}
               isDisableTrash={isDisableTrash}
+              removeFavourite={removeFavourite}
+              onClickremoveFavourite={onClickremoveFavourite}
+              isDisableRemoveFavourite={isDisableRemoveFavourite}
             />
           </Grid>
         </Grid>

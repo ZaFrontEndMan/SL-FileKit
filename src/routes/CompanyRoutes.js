@@ -2,6 +2,8 @@
 import ThemeColors from 'Components/ThemeColors';
 import CompanyLayout from 'layout/CompanyLayout';
 import Documents from 'views/company/documents/Documents';
+import Favourites from 'views/company/favourite/Favourites';
+import Members from 'views/company/members/Members';
 import Participants from 'views/company/participants/Participants';
 import Permissions from 'views/company/permissions/Permissions';
 import Quality from 'views/company/qualityAssurance/Quality';
@@ -23,6 +25,24 @@ const CompanyRouts = {
         {
           path: 'documents',
           element: <Documents />
+        }
+      ]
+    },
+    {
+      path: '/',
+      children: [
+        {
+          path: 'favourites',
+          element: <Favourites />
+        }
+      ]
+    },
+    {
+      path: '/',
+      children: [
+        {
+          path: 'members',
+          element: <Members />
         }
       ]
     },

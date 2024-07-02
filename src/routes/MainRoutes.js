@@ -34,15 +34,6 @@ const MainRoutes = {
       path: '/',
       children: [
         {
-          path: 'favourites',
-          element: <UtilsPlans />
-        }
-      ]
-    },
-    {
-      path: '/',
-      children: [
-        {
           path: 'subscriptions/clientId/:id',
           element: <ClientSubscription />
         }

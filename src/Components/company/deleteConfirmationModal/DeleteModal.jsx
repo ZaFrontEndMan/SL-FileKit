@@ -2,7 +2,7 @@ import { CircularProgress, TextField, Typography, Button } from '@mui/material';
 import { Box } from '@mui/system';
 import React from 'react';
 
-export default function DeleteModal({ title, handleModalClose, folderLoading, handleTrashedFolder }) {
+export default function DeleteModal({ title, handleModalClose, folderLoading, handleTrashedFolder, content }) {
   return (
     <Box
       sx={{
@@ -21,7 +21,7 @@ export default function DeleteModal({ title, handleModalClose, folderLoading, ha
         {title}
       </Typography>
       <Typography variant="h4" component="h2">
-        Are you sure want to trash this item ?
+        {content}
       </Typography>
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
         <Button variant="outlined" color="dark" onClick={handleModalClose} sx={{ mr: 1 }}>

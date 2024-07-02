@@ -6,7 +6,8 @@ import {
   IconWindmill,
   IconTrash,
   IconCalendarStar,
-  IconFileDescription
+  IconFileDescription,
+  IconJewishStar
 } from '@tabler/icons-react';
 
 // constant
@@ -17,6 +18,7 @@ const icons = {
   IconWindmill,
   IconCalendarStar,
   IconFileDescription,
+  IconJewishStar,
   IconTrash
 };
 
@@ -33,6 +35,14 @@ const utilities = {
       type: 'item',
       url: '/documents',
       icon: icons.IconFileDescription,
+      breadcrumbs: false
+    },
+    {
+      id: 'util-favourites',
+      title: 'Favourites',
+      type: 'item',
+      url: '/favourites',
+      icon: icons.IconJewishStar,
       breadcrumbs: false
     },
     {

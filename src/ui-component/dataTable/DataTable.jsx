@@ -8,7 +8,7 @@ import { IconSearch } from '@tabler/icons-react';
 import { Box } from '@mui/system';
 import * as XLSX from 'xlsx';
 import PropTypes from 'prop-types';
-
+import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
 export default function DataTable({
   modalRender,
   fileName,
@@ -58,7 +58,7 @@ export default function DataTable({
   return (
     <Box>
       {modalRender}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <OutlinedInput
           sx={{ width: '50%', pr: 1, pl: 2, my: 2 }}
           id="input-search-profile"
@@ -75,9 +75,30 @@ export default function DataTable({
             onChange: handleSearchChange
           }}
         />
-        {buttonText && <Button onClick={handleOpen}>{buttonText ? buttonText : 'Add'}</Button>}
+        {buttonText && (
+          <Button
+            variant="contained"
+            size="large"
+            sx={{ height: '40px', my: 2 }} // Adjust height as needed
+            onClick={handleOpen}
+          >
+            {buttonText ? buttonText : 'Add'}
+          </Button>
+        )}
       </Box>
-      <Button onClick={exportExcel}>Export to Excel</Button>
+      <Button
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          gap: 1,
+          mb: 2 // margin-bottom only
+        }}
+        onClick={exportExcel}
+      >
+        <DescriptionOutlinedIcon />
+        Export
+      </Button>
 
       <div className="ag-theme-quartz" style={{ height: 500 }}>
         {loading && !filteredData ? (
@@ -90,6 +111,9 @@ export default function DataTable({
             pagination={true}
             rowData={filteredData}
             columnDefs={columnDefs}
+            defaultColDef={{
+              cellStyle: { display: 'flex', alignItems: 'center', justifyContent: 'start' }
+            }}
           />
         )}
       </div>

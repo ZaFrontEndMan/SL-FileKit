@@ -7,13 +7,19 @@ import ListItemText from '@mui/material/ListItemText';
 
 import EditNoteIcon from '@mui/icons-material/EditNote';
 import StarOutlineIcon from '@mui/icons-material/StarOutline';
+import ClearOutlinedIcon from '@mui/icons-material/ClearOutlined';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import ListIcon from '@mui/icons-material/List';
 const FolderActions = ({
   //add to favourite
   favourite = true,
   onClickFavourite,
-  isDisableFaavourite = false,
+  isDisableFavourite = false,
+
+  //remove from Favourite
+  removeFavourite = false,
+  onClickremoveFavourite,
+  isDisableRemoveFavourite,
 
   //add to rename
   rename = true,
@@ -34,7 +40,6 @@ const FolderActions = ({
   const handleClose = () => {
     setAnchorEl(null);
   };
-
   return (
     <div>
       <IconButton onClick={handleClick}>
@@ -42,11 +47,19 @@ const FolderActions = ({
       </IconButton>
       <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
         {favourite && (
-          <MenuItem disabled={isDisableFaavourite} onClick={onClickFavourite}>
+          <MenuItem disabled={isDisableFavourite} onClick={onClickFavourite}>
             <ListItemIcon>
               <StarOutlineIcon />
             </ListItemIcon>
-            <ListItemText primary={'Add To Favourite'} />
+            <ListItemText primary={'Add To Favourites'} />
+          </MenuItem>
+        )}
+        {removeFavourite && (
+          <MenuItem disabled={isDisableRemoveFavourite} onClick={onClickremoveFavourite}>
+            <ListItemIcon>
+              <ClearOutlinedIcon />
+            </ListItemIcon>
+            <ListItemText primary={'Remove From Favourites'} />
           </MenuItem>
         )}
         {rename && (
